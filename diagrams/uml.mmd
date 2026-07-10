@@ -1,0 +1,30 @@
+classDiagram
+    class Song {
+        +int id
+        +str title
+        +str artist
+        +str genre        %% categorical · CORE
+        +str mood         %% categorical · CORE
+        +float energy     %% continuous 0-1 · CORE
+        +float acousticness  %% continuous 0-1 · CORE
+        +float tempo_bpm  %% 60-152 · needs scaling · v2
+        +float valence    %% continuous 0-1 · optional
+        +float danceability  %% continuous 0-1 · optional
+    }
+
+    class UserProfile {
+        +str favorite_genre     %% matches Song.genre
+        +str favorite_mood      %% matches Song.mood
+        +float target_energy    %% target for closeness
+        +bool likes_acoustic    %% maps to acousticness
+    }
+
+    class Recommender {
+        +List~Song~ songs
+        +recommend(user, k) List~Song~
+        +explain_recommendation(user, song) str
+    }
+
+    Recommender o-- "many" Song : holds catalog
+    Recommender ..> UserProfile : scores against
+    UserProfile ..> Song : preferences compared to features
