@@ -82,13 +82,13 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
     Scores a single song against user preferences.
     Required by recommend_songs() and src/main.py
     """
-    # Scoring logic from Phase 2 Algorithm Recipe (genre-first).
-    # Weights: genre +2.0, mood +1.0 (flat categorical bonuses),
-    # energy ×1.0 linear closeness. Perfect song caps at 4.0.
+    # Scoring logic from Phase 2 Algorithm Recipe (weight shift: energy-first).
+    # Weights: genre +1.0, mood +1.0 (flat categorical bonuses),
+    # energy ×2.0 linear closeness. Perfect song still caps at 4.0.
     # Reasons are collected in the same pass so explain_recommendation() can reuse them.
-    W_GENRE = 2.0
+    W_GENRE = 1.0
     W_MOOD = 1.0
-    W_ENERGY = 1.0
+    W_ENERGY = 2.0
 
     score = 0.0
     reasons: List[str] = []
@@ -106,7 +106,7 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
     # Energy — continuous, linear closeness on the 0-1 scale (partial credit).
     energy_points = W_ENERGY * (1 - abs(song["energy"] - user_prefs["target_energy"]))
     score += energy_points
-    if energy_points >= 0.8:
+    if energy_points >= 1.6:
         reasons.append("energy was a close match")
 
     return (score, reasons)

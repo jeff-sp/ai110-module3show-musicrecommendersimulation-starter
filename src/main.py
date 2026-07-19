@@ -18,16 +18,34 @@ def main() -> None:
     print(f"Loaded songs: {len(songs)}")
 
     # Starter example profile. Keys must match what score_song() reads.
-    user_prefs = {
+    # user_prefs = {
+    #     "favorite_genre": "pop",
+    #     "favorite_mood": "happy",
+    #     "target_energy": 0.8,
+    # }
+    high_energy_pop = {
         "favorite_genre": "pop",
         "favorite_mood": "happy",
         "target_energy": 0.8,
     }
+    chill_lofi = {
+        "favorite_genre": "lofi",
+        "favorite_mood": "chill",
+        "target_energy": 0.3,
+    }
+    deep_intense_rock = {
+        "favorite_genre": "rock",
+        "favorite_mood": "intense",
+        "target_energy": 0.8,
+    }
 
-    recommendations = recommend_songs(user_prefs, songs, k=5)
+    high_energy_pop_recommendations = recommend_songs(high_energy_pop, songs, k=5)
+    chill_lofi_recommendations = recommend_songs(chill_lofi, songs, k=5)
+    deep_intense_rock_recommendations = recommend_songs(deep_intense_rock, songs, k=5)
 
-    print_recommendations(recommendations)
-
+    print_recommendations(high_energy_pop_recommendations)
+    print_recommendations(chill_lofi_recommendations)
+    print_recommendations(deep_intense_rock_recommendations)
 
 def print_recommendations(recommendations) -> None:
     """Render recommendations as a clean, readable terminal layout."""

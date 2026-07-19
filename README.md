@@ -214,6 +214,115 @@ Loaded songs: 18
 
 ============================================================
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Loading songs from data/songs.csv...
+Loaded songs: 18
+
+============================================================
+  TOP RECOMMENDATIONS                                       
+============================================================
+
+  1. Sunrise City  —  Neon Echo
+     Score: 3.98
+     Reasons:
+       • Matched your favorite genre (pop)
+       • mood also matched (happy)
+       • energy was a close match
+
+  2. Gym Hero  —  Max Pulse
+     Score: 2.87
+     Reasons:
+       • Matched your favorite genre (pop)
+       • energy was a close match
+
+  3. Rooftop Lights  —  Indigo Parade
+     Score: 1.96
+     Reasons:
+       • mood also matched (happy)
+       • energy was a close match
+
+  4. Night Drive Loop  —  Neon Echo
+     Score: 0.95
+     Reasons:
+       • energy was a close match
+
+  5. Concrete Verses  —  MC Grayline
+     Score: 0.92
+     Reasons:
+       • energy was a close match
+
+============================================================
+
+============================================================
+  TOP RECOMMENDATIONS                                       
+============================================================
+
+  1. Library Rain  —  Paper Lanterns
+     Score: 3.95
+     Reasons:
+       • Matched your favorite genre (lofi)
+       • mood also matched (chill)
+       • energy was a close match
+
+  2. Midnight Coding  —  LoRoom
+     Score: 3.88
+     Reasons:
+       • Matched your favorite genre (lofi)
+       • mood also matched (chill)
+       • energy was a close match
+
+  3. Focus Flow  —  LoRoom
+     Score: 2.90
+     Reasons:
+       • Matched your favorite genre (lofi)
+       • energy was a close match
+
+  4. Spacewalk Thoughts  —  Orbit Bloom
+     Score: 1.98
+     Reasons:
+       • mood also matched (chill)
+       • energy was a close match
+
+  5. Autumn Elegy  —  Cellophane Quartet
+     Score: 1.00
+     Reasons:
+       • energy was a close match
+
+============================================================
+
+============================================================
+  TOP RECOMMENDATIONS                                       
+============================================================
+
+  1. Storm Runner  —  Voltline
+     Score: 3.89
+     Reasons:
+       • Matched your favorite genre (rock)
+       • mood also matched (intense)
+       • energy was a close match
+
+  2. Gym Hero  —  Max Pulse
+     Score: 1.87
+     Reasons:
+       • mood also matched (intense)
+       • energy was a close match
+
+  3. Sunrise City  —  Neon Echo
+     Score: 0.98
+     Reasons:
+       • energy was a close match
+
+  4. Rooftop Lights  —  Indigo Parade
+     Score: 0.96
+     Reasons:
+       • energy was a close match
+
+  5. Night Drive Loop  —  Neon Echo
+     Score: 0.95
+     Reasons:
+       • energy was a close match
+
+============================================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ```
 # e.g.:
 # User profile: genre=indie, mood=chill, energy=low
