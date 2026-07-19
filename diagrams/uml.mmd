@@ -3,9 +3,9 @@ classDiagram
         +int id
         +str title
         +str artist
-        +str genre        %% categorical · CORE
-        +str mood         %% categorical · CORE
-        +float energy     %% continuous 0-1 · CORE
+        +str genre        %% categorical · CORE · score +2.0 (PRIMARY)
+        +str mood         %% categorical · CORE · score +1.0 (secondary)
+        +float energy     %% continuous 0-1 · CORE · closeness x1.0
         +float acousticness  %% continuous 0-1 · CORE
         +float tempo_bpm  %% 60-152 · needs scaling · v2
         +float valence    %% continuous 0-1 · optional
@@ -13,10 +13,12 @@ classDiagram
     }
 
     class UserProfile {
-        +str favorite_genre     %% matches Song.genre
-        +str favorite_mood      %% matches Song.mood
-        +float target_energy    %% target for closeness
-        +bool likes_acoustic    %% maps to acousticness
+        +str favorite_genre         %% matches Song.genre
+        +str favorite_mood          %% matches Song.mood
+        +float target_energy        %% target for closeness
+        +float target_valence       %% target for Song.valence
+        +float target_danceability  %% target for Song.danceability
+        +float target_acousticness  %% target for Song.acousticness (was bool)
     }
 
     class Recommender {
@@ -28,3 +30,5 @@ classDiagram
     Recommender o-- "many" Song : holds catalog
     Recommender ..> UserProfile : scores against
     UserProfile ..> Song : preferences compared to features
+
+    note for Recommender "Genre-first scoring: genre +2.0 (primary) > mood +1.0 > energy closeness x1.0. Perfect song caps at 4.0. See docs/algorithm_recipe.md"

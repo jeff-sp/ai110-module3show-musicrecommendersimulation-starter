@@ -38,6 +38,102 @@ Some prompts to answer:
 
 You can include a simple diagram or bullet list if helpful.
 
+# Phase 2 — Algorithm Recipe: Scoring Logic
+
+This document is the **design** for how `score_song()` ranks songs against a
+user's preferences. It is intentionally code-free — it is the recipe the
+implementation should follow.
+
+## Design stance: genre-first
+
+This recommender is designed as a **genre-first** tool. Genre is the coarsest,
+most identity-defining filter of taste: a listener who asks for `rock` and is
+handed `classical` experiences a hard miss, no matter how well the mood lines
+up. The primary job is to get the *category* right; mood is a secondary
+refinement that fine-tunes within the desired genre.
+
+Consequence: **genre is weighted above mood.** This system might over-prioritize genre, ignoring great songs that match the user's mood
+
+## The two kinds of fields
+
+| Field type   | Fields                                              | Nature                        | Scoring approach            |
+|--------------|-----------------------------------------------------|-------------------------------|-----------------------------|
+| Categorical  | `genre`, `mood`                                     | Exact match or no match       | Flat bonus (all-or-nothing) |
+| Continuous   | `energy`, `valence`, `danceability`, `acousticness` | 0.0–1.0 scale, closeness matters | Distance-based (partial credit) |
+
+Categorical fields can only match or miss, so they earn a fixed bonus.
+Continuous fields live on a 0–1 scale, so "close" should earn partial credit.
+
+## Point weighting
+
+| Signal            | Weight | Max contribution | Rationale                                              |
+|-------------------|--------|------------------|--------------------------------------------------------|
+| **Genre match**   | +2.0   | 2.0              | Primary signal — the category that defines taste       |
+| **Mood match**    | +1.0   | 1.0              | Secondary refinement within the desired genre          |
+| **Energy closeness** | ×1.0 | 1.0             | Meaningful, but should not outvote the genre match     |
+
+A "perfect" song therefore caps at **4.0 points**, with genre as the dominant lever.
+
+### Why these numbers
+
+- Genre at 2× mood encodes the genre-first stance directly in the math: getting
+  the category right is worth twice getting the mood right.
+- Energy is capped at 1.0 so that even a flawless energy match cannot, on its
+  own, outrank a genre match. Energy fine-tunes; it does not decide.
+
+## Similarity math for continuous fields
+
+Because energy is already on a 0–1 scale, use **linear closeness** rather than
+raw distance:
+
+```
+energy_points = W_energy * (1 - abs(song.energy - user.target_energy))
+```
+
+- Identical energy → `1 - 0 = 1.0` → full points
+- Opposite extremes (0.0 vs 1.0) → `1 - 1 = 0.0` → nothing
+- Always bounded to [0, 1], so it composes cleanly with the flat bonuses.
+
+## Scope decisions for v1
+
+1. **Energy only, for now.** `UserProfile` also carries targets for `valence`,
+   `danceability`, and `acousticness`. v1 scores **energy only** to keep the
+   logic simple and the explanations readable. Once scoring + explanations work,
+   the same closeness formula can be extended to the other three continuous
+   fields (suggested weight ×0.5 each) for a richer signal.
+
+2. **Collect reasons while scoring.** `score_song()` returns `(score, reasons)`.
+   Build the `reasons` list *in the same pass* that computes the score, so
+   `explain_recommendation()` can reuse it — e.g. "Matched your favorite genre
+   (lofi); mood also matched (chill); energy was a close match." Do not score and
+   explain in two separate passes.
+
+## Worked example
+
+User wants: genre `lofi`, mood `chill`, target energy `0.40`.
+
+Song #2 "Midnight Coding" (lofi, chill, energy 0.42):
+
+| Signal  | Match?              | Points                        |
+|---------|---------------------|-------------------------------|
+| Genre   | lofi == lofi ✓      | +2.0                          |
+| Mood    | chill == chill ✓    | +1.0                          |
+| Energy  | 1 - |0.42 - 0.40|   | +0.98                         |
+| **Total** |                   | **3.98** (near-perfect)       |
+
+Song #6 "Spacewalk Thoughts" (ambient, chill, energy 0.28):
+
+| Signal  | Match?              | Points                        |
+|---------|---------------------|-------------------------------|
+| Genre   | ambient != lofi ✗   | +0.0                          |
+| Mood    | chill == chill ✓    | +1.0                          |
+| Energy  | 1 - |0.28 - 0.40|   | +0.88                         |
+| **Total** |                   | **1.88**                      |
+
+The genre-first stance is visible here: the ambient track scores much lower
+because it misses the genre, even though it nails the mood and energy.
+
+
 ---
 
 ## Getting Started
@@ -78,7 +174,46 @@ You can add more tests in `tests/test_recommender.py`.
 ## Sample Recommendation Output
 
 Paste a sample of your recommender's output here as a text block so a reader can see what it produces:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ python3 src/main.py
+Loading songs from data/songs.csv...
+Loaded songs: 18
 
+============================================================
+  TOP RECOMMENDATIONS                                       
+============================================================
+
+  1. Sunrise City  —  Neon Echo
+     Score: 3.98
+     Reasons:
+       • Matched your favorite genre (pop)
+       • mood also matched (happy)
+       • energy was a close match
+
+  2. Gym Hero  —  Max Pulse
+     Score: 2.87
+     Reasons:
+       • Matched your favorite genre (pop)
+       • energy was a close match
+
+  3. Rooftop Lights  —  Indigo Parade
+     Score: 1.96
+     Reasons:
+       • mood also matched (happy)
+       • energy was a close match
+
+  4. Night Drive Loop  —  Neon Echo
+     Score: 0.95
+     Reasons:
+       • energy was a close match
+
+  5. Concrete Verses  —  MC Grayline
+     Score: 0.92
+     Reasons:
+       • energy was a close match
+
+============================================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ```
 # e.g.:
 # User profile: genre=indie, mood=chill, energy=low
